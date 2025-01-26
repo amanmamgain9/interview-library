@@ -55,9 +55,9 @@ export const kpiData: KPI[] = [
         affiliateApplicability: ["subsidary1", "subsidary2"]
     }
 ];
-
 class KpiService {
     private readonly STORAGE_KEY = 'kpis';
+    private readonly DESCRIPTION_LIMIT = 100;
 
     constructor() {
         if (!localStorage.getItem(this.STORAGE_KEY)) {
@@ -89,6 +89,14 @@ class KpiService {
             kpi.name.toLowerCase().includes(normalizedQuery)
         );
     }
+
+    getTruncatedDescription(description: string): string {
+        return description.length > this.DESCRIPTION_LIMIT 
+            ? `${description.substring(0, this.DESCRIPTION_LIMIT)}...` 
+            : description;
+    }
 }
 
+
 export const kpiService = new KpiService();
+export default KpiService;

@@ -6,7 +6,7 @@ interface SearchBarProps {
 
 export const SearchBar = ({ onSearch }: SearchBarProps) => {
   return (
-    <div className="relative w-full">
+    <div className="relative w-full mb-6">
       <input
         type="text"
         placeholder="Type to search..."
