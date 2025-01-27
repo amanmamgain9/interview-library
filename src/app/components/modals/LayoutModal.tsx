@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { XIcon, LinkIcon, LayoutGrid } from 'lucide-react';
+import { XIcon, LinkIcon, LayoutGrid, LineChart, BarChart } from 'lucide-react';
 import { Layout, layoutService } from '../../services/layoutService';
 import { KPI, kpiService } from '../../services/kpiService';
 
@@ -14,9 +14,14 @@ export const LayoutModal: React.FC<LayoutModalProps> = ({ isOpen, onClose, layou
   const [kpIs, setKpIs] = useState<KPI[]>([]);
   const [selectedKpi, setSelectedKpi] = useState<KPI | null>(null);
   const [selectedMetric, setSelectedMetric] = useState('');
-  const [selectedVisual, setSelectedVisual] = useState('📈 Line');
-  const [dateRange, setDateRange] = useState('last_month');
+  const [selectedVisual, setSelectedVisual] = useState('Line');
+  const [dateRange, setDateRange] = useState('all');
   const [affiliate, setAffiliate] = useState('all');
+
+  const visualTypes = [
+    { id: 'Line', icon: LineChart },
+    { id: 'Bar', icon: BarChart }
+  ];
 
   useEffect(() => {
     if (isOpen && layoutId) {
@@ -34,7 +39,7 @@ export const LayoutModal: React.FC<LayoutModalProps> = ({ isOpen, onClose, layou
         const firstKpi = layoutKpIs[0];
         setSelectedKpi(firstKpi);
         setSelectedMetric(firstKpi.metricIds[0] || '');
-        setSelectedVisual(firstKpi.visualsAvailable[0] || '📈 Line');
+        setSelectedVisual('Line');
       }
     }
   }, [isOpen, layoutId]);
@@ -102,7 +107,7 @@ export const LayoutModal: React.FC<LayoutModalProps> = ({ isOpen, onClose, layou
                 if (kpi) {
                   setSelectedKpi(kpi);
                   setSelectedMetric(kpi.metricIds[0] || '');
-                  setSelectedVisual(kpi.visualsAvailable[0] || '📈 Line');
+                  setSelectedVisual('Line');
                 }
               }}
               className="w-full p-2 border rounded-lg text-sm"
@@ -136,17 +141,18 @@ export const LayoutModal: React.FC<LayoutModalProps> = ({ isOpen, onClose, layou
         <div className="space-y-2">
           <h4 className="text-sm font-medium">Visualization Type</h4>
           <div className="flex gap-2">
-            {(selectedKpi?.visualsAvailable || ['📈 Line']).map((visual) => (
+            {visualTypes.map(({ id, icon: Icon }) => (
               <button
-                key={visual}
-                onClick={() => setSelectedVisual(visual)}
-                className={`px-3 py-1 rounded-lg text-sm ${
-                  selectedVisual === visual 
+                key={id}
+                onClick={() => setSelectedVisual(id)}
+                className={`px-4 py-2 rounded-lg text-sm flex items-center gap-2 ${
+                  selectedVisual === id 
                     ? 'bg-gray-900 text-white' 
                     : 'bg-gray-100 hover:bg-gray-200'
                 }`}
               >
-                {visual}
+                <Icon className="w-4 h-4" />
+                <span>{id}</span>
               </button>
             ))}
           </div>
@@ -159,6 +165,7 @@ export const LayoutModal: React.FC<LayoutModalProps> = ({ isOpen, onClose, layou
             onChange={(e) => setDateRange(e.target.value)}
             className="p-2 border rounded-lg text-sm flex-1"
           >
+            <option value="all">All</option>
             <option value="last_week">Last Week</option>
             <option value="last_month">Last Month</option>
             <option value="last_quarter">Last Quarter</option>
@@ -178,6 +185,11 @@ export const LayoutModal: React.FC<LayoutModalProps> = ({ isOpen, onClose, layou
         {/* Visualization Preview */}
         <div className="bg-gray-50 p-4 rounded-lg h-64 flex flex-col items-center justify-center">
           <div className="text-center text-gray-500">
+            {selectedVisual === 'Line' ? (
+              <LineChart className="w-8 h-8 mx-auto mb-2" />
+            ) : (
+              <BarChart className="w-8 h-8 mx-auto mb-2" />
+            )}
             <p className="text-lg font-medium">{selectedVisual} Chart</p>
             <p className="text-sm mt-2">{selectedKpi?.name}</p>
             <p className="text-sm text-gray-600">{selectedMetric}</p>
