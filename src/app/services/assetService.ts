@@ -16,7 +16,6 @@ export interface AssetState {
     favorites: Asset[];
 }
 
-// Initial state moved to constant
 const initialState: AssetState = {
     featured: [
         { id: 'revenue_growth', type: 'kpi' },
@@ -42,7 +41,7 @@ export class AssetService {
         this.kpiService = kpiService;
         this.layoutService = layoutService;
         this.storyboardService = storyboardService;
-        this.state = { ...initialState }; // Create a copy of initial state
+        this.state = { ...initialState };
     }
 
     getAssetDetails(asset: Asset): AssetDetails | undefined {
@@ -95,19 +94,32 @@ export class AssetService {
 
     searchAcrossAll(query: string): (Asset & AssetDetails)[] {
         const normalizedQuery = query.toLowerCase();
+        
+        // Get all assets
         const allAssets: (Asset & AssetDetails)[] = [
-            ...this.kpiService.getAll().map(item => ({ ...item })),
-            ...this.layoutService.getAll().map(item => ({ ...item })),
-            ...this.storyboardService.getAll().map(item => ({  ...item }))
+            ...this.kpiService.getAll().map(item => ({ ...item, type: 'kpi' as const })),
+            ...this.layoutService.getAll().map(item => ({ ...item, type: 'layout' as const })),
+            ...this.storyboardService.getAll().map(item => ({ ...item, type: 'storyboard' as const }))
         ];
 
-        return allAssets.filter(asset => 
-            asset.name.toLowerCase().includes(normalizedQuery) || 
-            asset.description.toLowerCase().includes(normalizedQuery)
-        );
+        return allAssets.filter(asset => {
+            // Basic search criteria for all asset types
+            const basicMatch = asset.name.toLowerCase().includes(normalizedQuery) || 
+                             asset.description.toLowerCase().includes(normalizedQuery);
+
+            // Additional search for KPI areas
+            if (asset.type === 'kpi') {
+                const kpiAsset = asset as KPI;
+                const areasMatch = kpiAsset.areas?.some(area => 
+                    area.toLowerCase().includes(normalizedQuery)
+                );
+                return basicMatch || areasMatch;
+            }
+
+            return basicMatch;
+        });
     }
 
-    // Added getter for current state
     getState(): AssetState {
         return { ...this.state };
     }

@@ -1,6 +1,9 @@
+'use client';
+
 import React from 'react';
 import { Asset, AssetDetails, AssetService } from '../services/assetService';
 import { KPICard } from './cards/kpiCard';
+import { ItemCard } from './cards/itemCard';
 
 interface SearchResultsProps {
   query: string;
@@ -36,7 +39,6 @@ export const SearchResults = ({
   };
 
   const renderAsset = (asset: Asset & AssetDetails) => {
-    console.log(asset);
     switch (asset.type) {
       case 'kpi':
         return <KPICard key={asset.id} kpi={asset} />;
@@ -44,10 +46,13 @@ export const SearchResults = ({
       case 'layout':
       case 'storyboard':
         return (
-          <div key={asset.id} className="border rounded-lg p-4 hover:shadow-lg transition-shadow">
-            <h3 className="font-semibold text-lg mb-2">{asset.name}</h3>
-            <p className="text-gray-600">{asset.description}</p>
-          </div>
+          <ItemCard
+            key={asset.id}
+            name={asset.name}
+            description={asset.description}
+            variant="bordered"
+            onClick={() => asset.type === 'layout' && onLayoutClick(asset.id)}
+          />
         );
       
       default:
