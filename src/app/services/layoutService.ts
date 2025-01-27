@@ -1,5 +1,7 @@
 // types/layout.ts
-export interface Layout {
+import { Asset } from './assetService';
+
+export interface Layout extends Asset {
     id: string;
     name: string;
     description: string;
@@ -10,6 +12,7 @@ export interface Layout {
     createdAt: string;
     favorite: boolean;
     shareableLink: string;
+    type: 'layout';
 }
 
 export const layoutData: Layout[] = [
@@ -19,11 +22,11 @@ export const layoutData: Layout[] = [
         description: "Monthly sales performance tracking across regions",
         numberOfPages: 3,
         kpis: ["revenue_growth", "market_share"],
-        previewImageUrl: "/api/placeholder/400/300",
         createdBy: "John Doe",
         createdAt: "2024-01-15",
         favorite: true,
-        shareableLink: "https://dashboard/sales-perf"
+        shareableLink: "https://dashboard/sales-perf",
+        type: "layout"
     },
     {
         id: "operations_overview",
@@ -31,39 +34,29 @@ export const layoutData: Layout[] = [
         description: "Key operational metrics",
         numberOfPages: 2,
         kpis: ["operating_margin"],
-        previewImageUrl: "/api/placeholder/400/300",
         createdBy: "Jane Smith",
         createdAt: "2024-01-20",
         favorite: false,
-        shareableLink: "https://dashboard/ops-overview"
+        shareableLink: "https://dashboard/ops-overview",
+        type: "layout"
     }
 ];
 
 class LayoutService {
-    private readonly STORAGE_KEY = 'layouts';
-
-    constructor() {
-        if (!localStorage.getItem(this.STORAGE_KEY)) {
-            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(layoutData));
-        }
-    }
-
     getAll(): Layout[] {
-        const layouts = localStorage.getItem(this.STORAGE_KEY);
-        return layouts ? JSON.parse(layouts) : [];
+        return layoutData;
     }
 
-    toggleFavorite(id: string): void {
-        const layouts = this.getAll();
-        const index = layouts.findIndex(l => l.id === id);
+    toggleFavorite(id: string): Layout[] {
+        const index = layoutData.findIndex(l => l.id === id);
         if (index !== -1) {
-            layouts[index].favorite = !layouts[index].favorite;
-            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(layouts));
+            layoutData[index].favorite = !layoutData[index].favorite;
         }
+        return layoutData;
     }
 
     getById(id: string): Layout | undefined {
-        return this.getAll().find(layout => layout.id === id);
+        return layoutData.find(layout => layout.id === id);
     }
 }
 

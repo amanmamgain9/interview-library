@@ -1,6 +1,7 @@
 // app/services/kpi.service.ts
+import {Asset} from './assetService';
 
-export interface KPI {
+export interface KPI extends Asset {
     id: string;
     name: string;
     businessQuestions: string[];
@@ -26,7 +27,8 @@ export const kpiData: KPI[] = [
         calculation: "(Current Period Revenue - Prior Period Revenue) / Prior Period Revenue * 100",
         visualsAvailable: ["Line Chart", "Bar Chart"],
         affiliateApplicability: ["All"],
-        areas: ["Sales", "Finance", "Executive"]
+        areas: ["Sales", "Finance", "Executive"],
+        type: "kpi"
     },
     {
         id: "operating_margin",
@@ -40,7 +42,8 @@ export const kpiData: KPI[] = [
         calculation: "Operating Income / Revenue * 100",
         visualsAvailable: ["Trend Line"],
         affiliateApplicability: ["All"],
-        areas: ["Operations", "Finance"]
+        areas: ["Operations", "Finance"],
+        type: "kpi"
     },
     {
         id: "market_share",
@@ -54,41 +57,33 @@ export const kpiData: KPI[] = [
         calculation: "Company Sales / Total Industry Sales * 100",
         visualsAvailable: ["Pie Chart"],
         affiliateApplicability: ["subsidary1", "subsidary2"],
-        areas: ["Marketing", "Sales", "Strategy"]
+        areas: ["Marketing", "Sales", "Strategy"],
+        type: "kpi"
     }
 ];
 
 class KpiService {
-    private readonly STORAGE_KEY = 'kpis';
     private readonly DESCRIPTION_LIMIT = 100;
 
-    constructor() {
-        if (localStorage && !localStorage.getItem(this.STORAGE_KEY)) {
-            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(kpiData));
-        }
-    }
-
     getAll(): KPI[] {
-        const kpis = localStorage.getItem(this.STORAGE_KEY);
-        return kpis ? JSON.parse(kpis) : [];
+        return kpiData;
     }
 
-    update(id: string, updates: Partial<KPI>): void {
-        const kpis = this.getAll();
-        const index = kpis.findIndex(k => k.id === id);
+    update(id: string, updates: Partial<KPI>): KPI[] {
+        const index = kpiData.findIndex(k => k.id === id);
         if (index !== -1) {
-            kpis[index] = { ...kpis[index], ...updates };
-            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(kpis));
+            kpiData[index] = { ...kpiData[index], ...updates };
         }
+        return kpiData;
     }
 
     getById(id: string): KPI | undefined {
-        return this.getAll().find(kpi => kpi.id === id);
+        return kpiData.find(kpi => kpi.id === id);
     }
 
     searchByName(query: string): KPI[] {
         const normalizedQuery = query.toLowerCase();
-        return this.getAll().filter(kpi =>
+        return kpiData.filter(kpi =>
             kpi.name.toLowerCase().includes(normalizedQuery)
         );
     }

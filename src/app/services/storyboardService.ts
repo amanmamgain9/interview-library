@@ -1,5 +1,7 @@
 // types/storyboard.ts
-export interface Storyboard {
+import { Asset } from './assetService';
+
+export interface Storyboard extends Asset {
     id: string;
     name: string;
     description: string;
@@ -14,6 +16,7 @@ export interface Storyboard {
     createdAt: string;
     hasAccess: boolean;
     accessRequestStatus?: 'pending' | 'approved' | 'denied';
+    type: 'storyboard';
 }
 
 export const storyboardData: Storyboard[] = [
@@ -29,7 +32,8 @@ export const storyboardData: Storyboard[] = [
         applicableAffiliates: ["subsidary1", "subsidary2"],
         createdBy: "John Doe",
         createdAt: "2024-01-15",
-        hasAccess: true
+        hasAccess: true,
+        type: "storyboard"
     },
     {
         id: "market_analysis",
@@ -44,35 +48,26 @@ export const storyboardData: Storyboard[] = [
         createdBy: "Jane Smith",
         createdAt: "2024-01-20",
         hasAccess: false,
-        accessRequestStatus: "pending"
+        accessRequestStatus: "pending",
+        type: "storyboard"
     }
 ];
 
 class StoryboardService {
-    private readonly STORAGE_KEY = 'storyboards';
-
-    constructor() {
-        if (!localStorage.getItem(this.STORAGE_KEY)) {
-            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(storyboardData));
-        }
-    }
-
     getAll(): Storyboard[] {
-        const storyboards = localStorage.getItem(this.STORAGE_KEY);
-        return storyboards ? JSON.parse(storyboards) : [];
+        return storyboardData;
     }
 
-    requestAccess(id: string): void {
-        const storyboards = this.getAll();
-        const index = storyboards.findIndex(s => s.id === id);
-        if (index !== -1 && !storyboards[index].hasAccess) {
-            storyboards[index].accessRequestStatus = 'pending';
-            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(storyboards));
+    requestAccess(id: string): Storyboard[] {
+        const index = storyboardData.findIndex(s => s.id === id);
+        if (index !== -1 && !storyboardData[index].hasAccess) {
+            storyboardData[index].accessRequestStatus = 'pending';
         }
+        return storyboardData;
     }
 
     getById(id: string): Storyboard | undefined {
-        return this.getAll().find(storyboard => storyboard.id === id);
+        return storyboardData.find(storyboard => storyboard.id === id);
     }
 }
 

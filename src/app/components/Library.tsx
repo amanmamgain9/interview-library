@@ -6,8 +6,9 @@ import { TabNavigation } from './TabNavigation';
 import { FeatureComponent } from './FeaturedSection';
 import { KPISection } from './KPISection';
 import { LayoutSection } from './LayoutSection';
-import { LayoutModal } from './modals/LayoutModal';
 import { StoryboardSection } from './StoryboardSection';
+import { SearchResults } from './SearchResults';
+import { LayoutModal } from './modals/LayoutModal';
 import { AssetService } from '../services/assetService';
 import KpiService from '../services/kpiService';
 import LayoutService from '../services/layoutService';
@@ -41,13 +42,30 @@ export const Library = () => {
     setSelectedLayoutId(null);
   };
 
-  const renderActiveTab = () => {
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
+
+  const renderContent = () => {
+    if (searchQuery.trim()) {
+      return (
+        <SearchResults
+          query={searchQuery}
+          activeTab={activeTab}
+          assetService={assetService}
+          onLayoutClick={handleLayoutClick}
+        />
+      );
+    }
+
     switch (activeTab) {
       case 'featured':
-        return <FeatureComponent 
-          assetService={assetService} 
-          onLayoutClick={handleLayoutClick}
-        />;
+        return (
+          <FeatureComponent 
+            assetService={assetService} 
+            onLayoutClick={handleLayoutClick}
+          />
+        );
       case 'kpi':
         return <KPISection />;
       case 'layouts':
@@ -63,10 +81,12 @@ export const Library = () => {
     <div className="max-w-5xl mx-auto p-8">
       <div className="text-center mb-6">
         <h1 className="text-4xl font-bold mb-2">Library</h1>
-        <p className="text-gray-600">Browse for assets needed to report and present analysis.</p>
+        <p className="text-gray-600">
+          Browse for assets needed to report and present analysis.
+        </p>
       </div>
 
-      <SearchBar onSearch={setSearchQuery} />
+      <SearchBar onSearch={handleSearch} />
 
       <TabNavigation
         tabs={TABS}
@@ -74,7 +94,7 @@ export const Library = () => {
         onTabChange={setActiveTab}
       />
 
-      {renderActiveTab()}
+      {renderContent()}
 
       {/* Layout Modal */}
       <LayoutModal
