@@ -6,6 +6,7 @@ import { TabNavigation } from './TabNavigation';
 import { FeatureComponent } from './FeaturedSection';
 import { KPISection } from './KPISection';
 import { LayoutSection } from './LayoutSection';
+import { LayoutModal } from './modals/LayoutModal';
 import { StoryboardSection } from './StoryboardSection';
 import { AssetService } from '../services/assetService';
 import KpiService from '../services/kpiService';
@@ -22,6 +23,7 @@ const TABS = [
 export const Library = () => {
   const [activeTab, setActiveTab] = useState('featured');
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedLayoutId, setSelectedLayoutId] = useState<string | null>(null);
 
   // Initialize services
   const assetService = useMemo(() => {
@@ -31,14 +33,25 @@ export const Library = () => {
     return new AssetService(kpiService, layoutService, storyboardService);
   }, []);
 
+  const handleLayoutClick = (layoutId: string) => {
+    setSelectedLayoutId(layoutId);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedLayoutId(null);
+  };
+
   const renderActiveTab = () => {
     switch (activeTab) {
       case 'featured':
-        return <FeatureComponent assetService={assetService} />;
+        return <FeatureComponent 
+          assetService={assetService} 
+          onLayoutClick={handleLayoutClick}
+        />;
       case 'kpi':
         return <KPISection />;
       case 'layouts':
-        return <LayoutSection />;
+        return <LayoutSection onLayoutClick={handleLayoutClick} />;
       case 'storyboards':
         return <StoryboardSection />;
       default:
@@ -62,6 +75,13 @@ export const Library = () => {
       />
 
       {renderActiveTab()}
+
+      {/* Layout Modal */}
+      <LayoutModal
+        isOpen={selectedLayoutId !== null}
+        onClose={handleCloseModal}
+        layoutId={selectedLayoutId || ''}
+      />
     </div>
   );
 };

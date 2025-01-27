@@ -9,6 +9,7 @@ export interface KPI {
     calculation: string;
     visualsAvailable: string[];
     affiliateApplicability: string[];
+    areas: string[];
 }
 
 export const kpiData: KPI[] = [
@@ -24,43 +25,45 @@ export const kpiData: KPI[] = [
         description: "Year-over-year revenue growth rate across all business units",
         calculation: "(Current Period Revenue - Prior Period Revenue) / Prior Period Revenue * 100",
         visualsAvailable: ["Line Chart", "Bar Chart"],
-        affiliateApplicability: ["All"]
+        affiliateApplicability: ["All"],
+        areas: ["Sales", "Finance", "Executive"]
     },
     {
         id: "operating_margin",
         name: "Operating Margin",
         businessQuestions: [
             "How efficient are our operations?",
-            "Where are our biggest margin opportunities?",
             "Are cost reduction initiatives working?"
         ],
         metricIds: ["operating_income", "revenue", "costs"],
         description: "Operating profit as a percentage of revenue",
         calculation: "Operating Income / Revenue * 100",
         visualsAvailable: ["Trend Line"],
-        affiliateApplicability: ["All"]
+        affiliateApplicability: ["All"],
+        areas: ["Operations", "Finance"]
     },
     {
         id: "market_share",
         name: "Market Share",
         businessQuestions: [
             "Are we gaining or losing market share?",
-            "Which competitors are we winning/losing to?",
             "What's our share in key segments?"
         ],
         metricIds: ["sales_volume", "segment_share"],
         description: "Company's share of total addressable market",
         calculation: "Company Sales / Total Industry Sales * 100",
         visualsAvailable: ["Pie Chart"],
-        affiliateApplicability: ["subsidary1", "subsidary2"]
+        affiliateApplicability: ["subsidary1", "subsidary2"],
+        areas: ["Marketing", "Sales", "Strategy"]
     }
 ];
+
 class KpiService {
     private readonly STORAGE_KEY = 'kpis';
     private readonly DESCRIPTION_LIMIT = 100;
 
     constructor() {
-        if (!localStorage.getItem(this.STORAGE_KEY)) {
+        if (localStorage && !localStorage.getItem(this.STORAGE_KEY)) {
             localStorage.setItem(this.STORAGE_KEY, JSON.stringify(kpiData));
         }
     }
@@ -96,7 +99,6 @@ class KpiService {
             : description;
     }
 }
-
 
 export const kpiService = new KpiService();
 export default KpiService;

@@ -28,7 +28,7 @@ export const layoutData: Layout[] = [
     {
         id: "operations_overview",
         name: "Operations Overview",
-        description: "Key operational metrics and efficiency indicators",
+        description: "Key operational metrics",
         numberOfPages: 2,
         kpis: ["operating_margin"],
         previewImageUrl: "/api/placeholder/400/300",

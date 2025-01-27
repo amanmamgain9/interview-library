@@ -4,10 +4,28 @@ import { AssetService, Asset, AssetDetails } from '../services/assetService';
 
 interface FeatureComponentProps {
   assetService: AssetService;
+  onLayoutClick: (layoutId: string) => void;
 }
 
-const ItemCard = ({ name, description, date }: { name: string, description: string, date: string }) => (
-  <div className="bg-white rounded-lg p-4 flex items-start gap-4 hover:shadow-md transition-shadow">
+const ItemCard = ({ 
+  name, 
+  description, 
+  date, 
+  type,
+  id,
+  onClick 
+}: { 
+  name: string;
+  description: string;
+  date: string;
+  type: string;
+  id: string;
+  onClick: (type: string, id: string) => void;
+}) => (
+  <div 
+    className="bg-white rounded-lg p-4 flex items-start gap-4 hover:shadow-md transition-shadow cursor-pointer"
+    onClick={() => onClick(type, id)}
+  >
     <div className="flex-1 min-w-0">
       <h3 className="text-sm font-medium text-gray-900 truncate">{name}</h3>
       <p className="text-sm text-gray-500 mt-1 line-clamp-2">{description}</p>
@@ -22,9 +40,10 @@ interface SectionProps {
   items: (Asset & AssetDetails)[];
   error: string | null;
   onRetry: () => void;
+  onItemClick: (type: string, id: string) => void;
 }
 
-const Section = ({ title, subtitle, items, error, onRetry }: SectionProps) => {
+const Section = ({ title, subtitle, items, error, onRetry, onItemClick }: SectionProps) => {
   if (error) {
     return (
       <section className="text-center py-8">
@@ -53,6 +72,9 @@ const Section = ({ title, subtitle, items, error, onRetry }: SectionProps) => {
               name={item.name}
               description={item.description}
               date={new Date().toLocaleDateString()}
+              type={item.type}
+              id={item.id}
+              onClick={onItemClick}
             />
           ))}
         </div>
@@ -61,7 +83,7 @@ const Section = ({ title, subtitle, items, error, onRetry }: SectionProps) => {
   );
 };
 
-export const FeatureComponent = ({ assetService }: FeatureComponentProps) => {
+export const FeatureComponent = ({ assetService, onLayoutClick }: FeatureComponentProps) => {
   const [featuredItems, setFeaturedItems] = useState<(Asset & AssetDetails)[]>([]);
   const [trendingItems, setTrendingItems] = useState<(Asset & AssetDetails)[]>([]);
   const [favoriteItems, setFavoriteItems] = useState<(Asset & AssetDetails)[]>([]);
@@ -69,6 +91,13 @@ export const FeatureComponent = ({ assetService }: FeatureComponentProps) => {
   const [featuredError, setFeaturedError] = useState<string | null>(null);
   const [trendingError, setTrendingError] = useState<string | null>(null);
   const [favoritesError, setFavoritesError] = useState<string | null>(null);
+
+  const handleItemClick = (type: string, id: string) => {
+    if (type === 'layout') {
+      onLayoutClick(id);
+    }
+    // Handle other types as needed
+  };
 
   const loadFeatured = async () => {
     try {
@@ -117,6 +146,7 @@ export const FeatureComponent = ({ assetService }: FeatureComponentProps) => {
         items={featuredItems}
         error={featuredError}
         onRetry={loadFeatured}
+        onItemClick={handleItemClick}
       />
       
       <Section
@@ -125,6 +155,7 @@ export const FeatureComponent = ({ assetService }: FeatureComponentProps) => {
         items={trendingItems}
         error={trendingError}
         onRetry={loadTrending}
+        onItemClick={handleItemClick}
       />
       
       <Section
@@ -133,6 +164,7 @@ export const FeatureComponent = ({ assetService }: FeatureComponentProps) => {
         items={favoriteItems}
         error={favoritesError}
         onRetry={loadFavorites}
+        onItemClick={handleItemClick}
       />
     </div>
   );
