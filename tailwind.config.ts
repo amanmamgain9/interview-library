@@ -14,6 +14,10 @@ export default {
       },
       height: {
         '9/10': '90%',
+      },
+      fontFamily: {
+        'boring-bold': ['Boring Sans Bold', 'sans-serif'],
+        'boring-light': ['Boring Sans Light', 'sans-serif'],
       }
     },
   },

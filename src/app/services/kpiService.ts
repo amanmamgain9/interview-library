@@ -1,5 +1,4 @@
-// app/services/kpi.service.ts
-import {Asset} from './assetService';
+import { Asset } from './assetService';
 
 export interface KPI extends Asset {
     id: string;
@@ -11,6 +10,8 @@ export interface KPI extends Asset {
     visualsAvailable: string[];
     affiliateApplicability: string[];
     areas: string[];
+    ifRequested?: boolean;
+    ifOwned?: boolean;
 }
 
 export const kpiData: KPI[] = [
@@ -26,9 +27,11 @@ export const kpiData: KPI[] = [
         description: "Year-over-year revenue growth rate across all business units",
         calculation: "(Current Period Revenue - Prior Period Revenue) / Prior Period Revenue * 100",
         visualsAvailable: ["Line Chart", "Bar Chart"],
-        affiliateApplicability: ["All"],
+        affiliateApplicability: ["subsidary1", "subsidary2"],
         areas: ["Sales", "Finance", "Executive"],
-        type: "kpi"
+        type: "kpi",
+        ifRequested: false,
+        ifOwned: false
     },
     {
         id: "operating_margin",
@@ -41,9 +44,11 @@ export const kpiData: KPI[] = [
         description: "Operating profit as a percentage of revenue",
         calculation: "Operating Income / Revenue * 100",
         visualsAvailable: ["Trend Line"],
-        affiliateApplicability: ["All"],
+        affiliateApplicability: ["subsidary1", "subsidary2"],
         areas: ["Operations", "Finance"],
-        type: "kpi"
+        type: "kpi",
+        ifRequested: false,
+        ifOwned: true
     },
     {
         id: "market_share",
@@ -58,7 +63,9 @@ export const kpiData: KPI[] = [
         visualsAvailable: ["Pie Chart"],
         affiliateApplicability: ["subsidary1", "subsidary2"],
         areas: ["Marketing", "Sales", "Strategy"],
-        type: "kpi"
+        type: "kpi",
+        ifRequested: true,
+        ifOwned: false
     }
 ];
 
@@ -90,7 +97,7 @@ class KpiService {
 
     getTruncatedDescription(description: string): string {
         return description.length > this.DESCRIPTION_LIMIT 
-            ? `${description.substring(0, this.DESCRIPTION_LIMIT)}...` 
+            ? `${description.substring(0, this.DESCRIPTION_LIMIT)}...`
             : description;
     }
 }

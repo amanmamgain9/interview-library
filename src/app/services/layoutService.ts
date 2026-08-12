@@ -25,7 +25,7 @@ export const layoutData: Layout[] = [
         createdBy: "John Doe",
         createdAt: "2024-01-15",
         favorite: true,
-        shareableLink: "https://dashboard/sales-perf",
+        shareableLink: "sales-perf",
         type: "layout"
     },
     {
@@ -37,7 +37,7 @@ export const layoutData: Layout[] = [
         createdBy: "Jane Smith",
         createdAt: "2024-01-20",
         favorite: false,
-        shareableLink: "https://dashboard/ops-overview",
+        shareableLink: "ops-overview",
         type: "layout"
     }
 ];

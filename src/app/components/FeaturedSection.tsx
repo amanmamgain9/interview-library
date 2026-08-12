@@ -1,38 +1,13 @@
 'use client';
+import React from 'react';
 import { useEffect, useState } from 'react';
 import { AssetService, Asset, AssetDetails } from '../services/assetService';
+import { ItemCard } from './cards/itemCard';
 
 interface FeatureComponentProps {
   assetService: AssetService;
   onLayoutClick: (layoutId: string) => void;
 }
-
-const ItemCard = ({ 
-  name, 
-  description, 
-  date, 
-  type,
-  id,
-  onClick 
-}: { 
-  name: string;
-  description: string;
-  date: string;
-  type: string;
-  id: string;
-  onClick: (type: string, id: string) => void;
-}) => (
-  <div 
-    className="bg-white rounded-lg p-4 flex items-start gap-4 hover:shadow-md transition-shadow cursor-pointer"
-    onClick={() => onClick(type, id)}
-  >
-    <div className="flex-1 min-w-0">
-      <h3 className="text-sm font-medium text-gray-900 truncate">{name}</h3>
-      <p className="text-sm text-gray-500 mt-1 line-clamp-2">{description}</p>
-      <p className="text-xs text-gray-400 mt-2">{date}</p>
-    </div>
-  </div>
-);
 
 interface SectionProps {
   title: string;
@@ -41,29 +16,16 @@ interface SectionProps {
   error: string | null;
   onRetry: () => void;
   onItemClick: (type: string, id: string) => void;
+  variant: 'bordered' | 'minimal';
 }
 
-const Section = ({ title, subtitle, items, error, onRetry, onItemClick }: SectionProps) => {
-  if (error) {
-    return (
-      <section className="text-center py-8">
-        <p className="text-red-600">{error}</p>
-        <button 
-          onClick={onRetry}
-          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-        >
-          Retry
-        </button>
-      </section>
-    );
-  }
-
+const Section = ({ title, subtitle, items, error, onRetry, onItemClick, variant }: SectionProps) => {
   return (
     <section className="mb-12">
-      <h2 className="text-xl font-semibold mb-2">{title}</h2>
-      <p className="text-gray-600 text-sm mb-4">{subtitle}</p>
+      <h2 className="text-3xl font-semibold mb-2">{title}</h2>
+      <p className="text-gray-400 text-base mb-4">{subtitle}</p>
       {items.length === 0 ? (
-        <p className="text-gray-500 text-center py-8">No {title.toLowerCase()} items available</p>
+        <p className="text-gray-400 text-center py-8">No {title.toLowerCase()} items available</p>
       ) : (
         <div className="grid grid-cols-2 gap-4">
           {items.map((item) => (
@@ -71,10 +33,8 @@ const Section = ({ title, subtitle, items, error, onRetry, onItemClick }: Sectio
               key={`${item.type}-${item.id}`}
               name={item.name}
               description={item.description}
-              date={new Date().toLocaleDateString()}
-              type={item.type}
-              id={item.id}
-              onClick={onItemClick}
+              variant={variant}
+              onClick={() => onItemClick(item.type, item.id)}
             />
           ))}
         </div>
@@ -147,6 +107,7 @@ export const FeatureComponent = ({ assetService, onLayoutClick }: FeatureCompone
         error={featuredError}
         onRetry={loadFeatured}
         onItemClick={handleItemClick}
+        variant="bordered"
       />
       
       <Section
@@ -156,6 +117,7 @@ export const FeatureComponent = ({ assetService, onLayoutClick }: FeatureCompone
         error={trendingError}
         onRetry={loadTrending}
         onItemClick={handleItemClick}
+        variant="minimal"
       />
       
       <Section
@@ -165,6 +127,7 @@ export const FeatureComponent = ({ assetService, onLayoutClick }: FeatureCompone
         error={favoritesError}
         onRetry={loadFavorites}
         onItemClick={handleItemClick}
+        variant="bordered"
       />
     </div>
   );
